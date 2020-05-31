@@ -1,0 +1,53 @@
+apply plugin: 'scala'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+buildscript {
+    /**
+     * Repositories for build script (build.gradle)
+     */
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+}
+
+repositories {
+    maven {
+        def homeDir = System.getProperty('user.home')
+        url = "file://$homeDir/.m2/repository"
+        name = "local"
+    }
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    def scalaVersion = '2.11'
+    def scalaVersionMinor = '12'
+    def awsVersion = '1.11.105'
+    def sparkVersion = '2.4.5'
+    def hadoopVersion = '2.8.5'
+    compile "org.apache.spark:spark-core_$scalaVersion:$sparkVersion"
+    compile "org.apache.spark:spark-sql_$scalaVersion:$sparkVersion"
+    compile "org.apache.spark:spark-streaming_$scalaVersion:$sparkVersion"
+    compile "org.scala-lang:scala-library:$scalaVersion.$scalaVersionMinor"
+    compile "org.apache.hadoop:hadoop-aws:$hadoopVersion"
+    compile "com.amazonaws:aws-java-sdk:$awsVersion"
+    compile "com.github.scopt:scopt_$scalaVersion:3.7.1"
+}
+
+jar {
+    zip64 = true
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+}

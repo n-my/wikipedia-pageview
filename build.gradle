@@ -1,12 +1,4 @@
-apply plugin: 'scala'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 buildscript {
-    /**
-     * Repositories for build script (build.gradle)
-     */
     repositories {
         mavenLocal()
         mavenCentral()
@@ -14,14 +6,24 @@ buildscript {
     }
 }
 
+plugins {
+    id 'scala'
+    id 'com.github.alisiikh.scalastyle' version '3.4.0'
+    id 'com.github.maiflai.scalatest' version '0.26'
+    id 'org.scoverage' version '4.0.1'
+}
+
 repositories {
-    maven {
-        def homeDir = System.getProperty('user.home')
-        url = "file://$homeDir/.m2/repository"
-        name = "local"
-    }
     mavenLocal()
     mavenCentral()
+    jcenter()
+}
+
+scalastyle {
+    scalaVersion = '2.11'
+    failOnWarning = false
+    verbose = false
+    quiet = false
 }
 
 dependencies {
@@ -37,6 +39,10 @@ dependencies {
     compile "org.apache.hadoop:hadoop-aws:$hadoopVersion"
     compile "com.amazonaws:aws-java-sdk:$awsVersion"
     compile "com.github.scopt:scopt_$scalaVersion:3.7.1"
+
+    testCompile "org.scalatest:scalatest_$scalaVersion:3.0.1"
+    testCompile "org.scalamock:scalamock_$scalaVersion:4.4.0"
+    testRuntime 'org.pegdown:pegdown:1.4.2'
 }
 
 jar {

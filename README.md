@@ -17,3 +17,5 @@ For your solution, explain:
     - What might change about your solution if this application needed to run automatically for each hour of the day?
     - How would you test this application?
     - How you’d improve on this application design?
+    
+SPARK_LOCAL_RUN

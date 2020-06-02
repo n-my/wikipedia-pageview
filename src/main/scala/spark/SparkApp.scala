@@ -10,8 +10,8 @@ import wikipedia.Config
 import scala.util.Properties
 
 /**
- * Trait to deal with the [[SparkSession]], and the configuration of a Spark job.
- * @tparam T
+ * Trait to handle the [[SparkSession]], the [[SparkConf]] and the job configuration
+ * of a Spark job.
  */
 trait SparkApp[T <: Config] {
   val logger: Logger = Logger.getLogger(getClass.getName)
@@ -49,7 +49,7 @@ trait SparkApp[T <: Config] {
       .builder()
       .config(sparkConf)
       .getOrCreate()
-    spark.sparkContext.hadoopConfiguration.set("fs.s3a.aws.credentials.provider", "com.amazonaws.auth.DefaultAWSCredentialsProviderChain") // to pick up AWS_PROFILE
+    spark.sparkContext.hadoopConfiguration.set("fs.s3a.aws.credentials.provider", "com.amazonaws.auth.DefaultAWSCredentialsProviderChain")
     spark
   }
 
@@ -61,7 +61,7 @@ trait SparkApp[T <: Config] {
   def sparkConf: SparkConf = {
     val conf = new SparkConf()
       .setAppName(appName)
-      .set("fs.s3a.aws.credentials.provider", "com.amazonaws.auth.DefaultAWSCredentialsProviderChain") // to pick up AWS_PROFILE
+      .set("fs.s3a.aws.credentials.provider", "com.amazonaws.auth.DefaultAWSCredentialsProviderChain")
     if (Properties.envOrElse("SPARK_LOCAL_RUN", "false").toBoolean) {
       conf.setMaster("local[*]")
         .set("fs.file.impl", classOf[LocalFileSystem].getName)

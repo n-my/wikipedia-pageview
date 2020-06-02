@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 import org.apache.spark.SparkFiles
 import org.apache.spark.sql.catalyst.plans.LeftAnti
 import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.functions._
+import org.apache.spark.sql.functions
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import scopt.OptionParser
 import spark.{SparkApp, Storage}
@@ -166,7 +166,7 @@ object PageViewApp extends SparkApp[UsageConfig] {
       .partitionBy("domain_code")
       .orderBy($"count_views".desc)
     pageViews
-      .withColumn("rank", row_number.over(overDomain))
+      .withColumn("rank", functions.row_number.over(overDomain))
       .where($"rank" <= topN)
       .drop($"rank")
       .orderBy($"domain_code".asc, $"count_views".desc)

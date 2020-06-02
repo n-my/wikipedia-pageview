@@ -38,7 +38,7 @@ class UsageOptionParser
     .required().withFallback(() => "")
     .validate {
       case "" => success
-      case value => validateDate(value)
+      case value: Any => validateDate(value)
     }
     .action((value, arg) => {
       value match {

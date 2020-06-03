@@ -21,7 +21,7 @@ case class UsageConfig(startDate: Option[LocalDateTime] = None,
  * Class that defines, parses and validates the arguments of the [[PageViewApp]] job.
  */
 class UsageOptionParser
-  extends OptionParser[UsageConfig]("Spark job") {
+  extends OptionParser[UsageConfig](PageViewApp.appName) {
   head("scopt", "3.x")
   private val inputDatePattern = "yyyy-MM-dd-HH"
   private val dateFormatter = DateTimeFormatter.ofPattern(inputDatePattern)
@@ -54,7 +54,7 @@ class UsageOptionParser
     .action((value, arg) => {
       arg.copy(bucketName = value)
     })
-    .text("The output S3 bucket name")
+    .text("The output S3 bucket name. Required.")
 
   /**
    * Validates that a [[String]] can be parsed as a [[LocalDateTime]]

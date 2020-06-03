@@ -22,7 +22,7 @@ import wikipedia.PageViewSchema.{Page, PageView}
  */
 object PageViewApp extends SparkApp[UsageConfig] {
 
-  override def appName: String = "Wikipedia-PageViews"
+  override def appName: String = "wikipedia.PageViewApp"
   override def configuration: UsageConfig = UsageConfig()
   override def configurationParser: OptionParser[UsageConfig] = new UsageOptionParser()
   val topN = 25
@@ -50,7 +50,10 @@ object PageViewApp extends SparkApp[UsageConfig] {
           storage.writeCsv(topPageViews, OutputPartitionNumber, outputPath)
       }
     } catch {
-      case e: Exception => logger.error(e.getMessage, e)
+      case e: Exception => {
+        logger.error(s"${appName} failed in an unrecoverable way. Exiting now.")
+        logger.error(e.getMessage, e)
+      }
     }
   }
 

@@ -1,21 +1,47 @@
-# wikipedia-pageview-data-pipeline
+# Wikipedia pageview
 
-Build a simple application that we can run to compute the top 25 pages on Wikipedia for each of the Wikipedia sub-domains:
+A Spark application to
+- compute the top 25 pages on Wikipedia for each of the Wikipedia sub-domains
+- write the output to S3
 
-    - Accept input parameters for the date and hour of data to analyze (default to the current date/hour - 24 hours if not passed, i.e. previous day/hour).
-    - Download the page view counts from wikipedia for the given date/hour from https://dumps.wikimedia.org/other/pageviews/
-        More information on the format can be found here: https://wikitech.wikimedia.org/wiki/Analytics/Data_Lake/Traffic/Pageviews
-    - Eliminate any pages found in this blacklist: https://s3.amazonaws.com/dd-interview-data/data_engineer/wikipedia/blacklist_domains_and_pages
-    - Compute the top 25 articles for the given day and hour by total pageviews for each unique domain in the remaining data.
-    - Save the results to a file, either locally or on S3, sorted by domain and number of pageviews for easy perusal.
-    - Only run these steps if necessary; that is, not rerun if the work has already been done for the given day and hour.
-    - Be capable of being run for a range of dates and hours; each hour within the range should have its own result file.
+## Build the app
 
-For your solution, explain:
+An already compiled JAR is provided in `build/libs/` but feel free to build it for yourself
+```bash
+./gradlew clean build
+```
+Note: this command will overwrite the provided JAR.
 
-    - What additional things would you want to operate this application in a production setting?
-    - What might change about your solution if this application needed to run automatically for each hour of the day?
-    - How would you test this application?
-    - How you’d improve on this application design?
-    
-SPARK_LOCAL_RUN
+## Run the app
+
+### App usage
+```
+Usage: wikipedia.PageViewApp [options]
+  -s, --start-date <value>  The (included) start date as yyyy-MM-dd-HH in UTC. Defaults to the previous day and hour
+  -e, --end-date <value>    The (excluded) end date as yyyy-MM-dd-HH in UTC. Defaults to (start-date + 1h)
+  -b, --bucket-name <value> The output S3 bucket name. Required.
+```
+
+### AWS authentication
+Since the app writes the output file(s) to S3, it has to authenticate to your AWS account.
+You may use any credential provider supported by the AWS cli (see the [AWS Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html#config-settings-and-precedence)), such as a named profile and the `AWS_PROFILE` env var.
+
+You also need to have the proper IAM permissions on the given S3 bucket.
+
+### Run locally as a standalone JAR
+**Requires Java 1.8**
+
+As any Scala/Java Spark app, you can run it directly as a JAR.
+The environment variable `SPARK_LOCAL_RUN` should be set to `true`
+```bash
+SPARK_LOCAL_RUN=true java -cp build/libs/wikipedia-pageview-1.0.0.jar wikipedia.PageViewApp -s 2020-06-01-08 -b my-bucket
+```
+
+### Run on a Spark cluster
+You can also run it in your favorite Spark environment, using a `spark-submit` command
+```bash
+spark-submit --class wikipedia.PageViewApp wikipedia-pageview-1.0.0.jar -s 2020-06-01-08 -b my-bucket
+```
+
+Note: the application uses _Hadoop 2.8.5_ and _Spark 2.4.5_ dependencies.
+It was successfully tested on Databricks Runtime Version 6.6 and on EMR Release 5.30.0

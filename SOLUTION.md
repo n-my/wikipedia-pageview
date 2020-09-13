@@ -4,14 +4,14 @@ Apart from the application itself, here are a few things I would want in order t
 * a staging and a production environments. Whatever these environments are, their creation should be fully automated
 * a CI pipeline: automate the release process, as code
 * a CD pipeline: automate the deployments to staging and to prod, as code
-* a monitoring service: Datadog? :)
+* a monitoring service
 * a log management system: centralize the logs, make them searchable
 * an alerting system: the team should be alerted if the job fails, takes too long, etc
 
 ### What might change about your solution if this application needed to run automatically for each hour of the day?
 
 This repository only contains the Spark application. If it needed to run automatically for each hour of the day,
-we would need to a workflow orchestrator and scheduler such as Luigi or Apache Airflow to define
+we would need to a workflow orchestrator such as Luigi or Apache Airflow to define
 and operate a multi-step pipeline.
 
 Using this pipeline, we could remove a couple of steps from the application to make it idempotent:
